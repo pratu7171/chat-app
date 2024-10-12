@@ -6,14 +6,21 @@ const router = require('./routes/index');
 const cookiesParser = require('cookie-parser');
 const { app, server } = require('./socket/index');
 
-// Initialize express app
+// CORS configuration
 app.use(cors({
-    origin: process.env.FRONTEND_URL, // Ensure this is set in your .env file
-    credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+    credentials: true,
+    origin: (origin, callback) => {
+        const allowedOrigins = [
+            process.env.FRONTEND_URL, // Your frontend URL from .env
+            'https://chat-app-chi-two-18.vercel.app', // Additional allowed origin
+        ];
+        if (allowedOrigins.includes(origin) || !origin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
 }));
-
-// Log the Frontend URL for debugging
-console.log('Frontend URL:', process.env.FRONTEND_URL);
 
 // Middleware for parsing JSON and cookies
 app.use(express.json());
